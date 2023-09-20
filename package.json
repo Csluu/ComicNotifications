@@ -1,0 +1,33 @@
+{
+	"name": "comicnotifications",
+	"version": "1.0.0",
+	"description": "Grabs comic updates through various websites",
+	"main": "index.js",
+	"scripts": {
+		"start": "electron .",
+		"test": "echo \"Error: no test specified\" && exit 1"
+	},
+	"author": "",
+	"license": "ISC",
+	"devDependencies": {
+		"electron": "^26.2.1",
+		"electron-builder": "^24.6.4",
+		"electron-store": "^8.1.0",
+		"prettier": "^3.0.3",
+		"prettier-plugin-tailwindcss": "^0.5.4",
+		"tailwindcss": "^3.3.3"
+	},
+	"dependencies": {
+		"puppeteer": "^21.3.1",
+		"puppeteer-extra": "^3.3.6",
+		"puppeteer-extra-plugin-adblocker": "^2.13.6",
+		"puppeteer-extra-plugin-stealth": "^2.11.2"
+	},
+	"build": {
+		"appId": "com.comic-notifications",
+		"linux": {
+			"target": "AppImage",
+			"icon": "./build/icon.png"
+		}
+	}
+}
