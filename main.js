@@ -1,6 +1,7 @@
-const { app, BrowserWindow, ipcMain } = require("electron");
+const { app, BrowserWindow, ipcMain, shell } = require("electron");
 const Store = require("electron-store");
 const path = require("path");
+const getComicUpdates = require("./getUpdates");
 
 // * Constants and Variables
 // ! Change this to "production" or "development" when in development in when ready for production
@@ -23,19 +24,19 @@ const createMainWindow = () => {
 
 	// Create the browser window.
 	mainWindow = new BrowserWindow({
-		x,
-		y,
-		width: isDev ? 1500 : 850,
-		height: 535,
-		transparent: true,
-		resizable: false,
-		frame: false,
+		x: 1080,
+		y: 20,
+		width: isDev ? 1500 : 455,
+		height: isDev ? 500 : 150,
+		transparent: isDev ? false : true,
+		resizable: isDev ? true : false,
+		frame: isDev ? true : false,
 		webPreferences: {
 			// allows dev tools to be opened
 			devTools: isDev ? true : false,
-			// Security risk if turned on
+			// Security risk if turned on BUT currently preload.js doesn't work without it..... Still being worked on in electron
 			// Only turn on for modules like fs for writing files on the web app (frontend)
-			nodeIntegration: false,
+			nodeIntegration: true,
 			// Separates the web app (frontend) from the electron app (backend) to prevent malicious code
 			// Have to use preload.js script to set up communication
 			contextIsolation: true,
@@ -61,7 +62,7 @@ const createMainWindow = () => {
 // * App Initialization
 // This method will be called when Electron has finished
 // Some APIs can only be used after this event occurs.
-app.whenReady().then(() => {
+app.whenReady().then(async () => {
 	createMainWindow();
 
 	// Remove mainWindow from memory on close to prevent memory leak
@@ -100,12 +101,18 @@ app.on("window-all-closed", () => {
 	}
 });
 
-// * Web Scrapping
 ipcMain.handle("get-updates", async () => {
 	try {
-		const data = await getWeatherData();
-		return data;
+		const updates = await getComicUpdates();
+		return updates;
 	} catch (error) {
-		console.error(error);
+		console.error("Error fetching comic updates:", error);
 	}
 });
+
+ipcMain.handle("open-link", (_, url) => {
+	shell.openExternal(url);
+	console.log("Launch");
+});
+
+// TODO Close out the popup after few seconds

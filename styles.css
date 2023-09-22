@@ -1,5 +1,21 @@
+@import url("https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600&display=swap");
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+.no-drag {
+	-webkit-app-region: no-drag;
+}
 
+.yes-drag {
+	-webkit-app-region: drag;
+}
+
+.body {
+	@apply flex justify-center place-items-center font-quicksand font-semibold;
+}
+
+* {
+	@apply text-gray-200;
+}

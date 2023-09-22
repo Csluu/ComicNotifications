@@ -2,7 +2,7 @@
 	"name": "comicnotifications",
 	"version": "1.0.0",
 	"description": "Grabs comic updates through various websites",
-	"main": "index.js",
+	"main": "main.js",
 	"scripts": {
 		"start": "electron .",
 		"test": "echo \"Error: no test specified\" && exit 1"
