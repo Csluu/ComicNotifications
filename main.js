@@ -26,7 +26,7 @@ const createMainWindow = () => {
 	mainWindow = new BrowserWindow({
 		x: 1080,
 		y: 20,
-		width: isDev ? 1500 : 455,
+		width: isDev ? 1500 : 475,
 		height: isDev ? 500 : 150,
 		transparent: isDev ? false : true,
 		resizable: isDev ? true : false,
