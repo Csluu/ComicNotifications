@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain, shell } = require("electron");
+const { app, BrowserWindow, ipcMain, shell, Menu, Tray } = require("electron");
 const Store = require("electron-store");
 const path = require("path");
 const getComicUpdates = require("./getUpdates");
@@ -16,6 +16,7 @@ const store = new Store();
 
 // Initializing main window so we can remove it from memory later to prevent memory leak
 let mainWindow;
+let tray = null;
 
 // * Browser Windows
 const createMainWindow = () => {
@@ -63,6 +64,17 @@ const createMainWindow = () => {
 // This method will be called when Electron has finished
 // Some APIs can only be used after this event occurs.
 app.whenReady().then(async () => {
+	tray = new Tray(path.join(__dirname, "./Renderer/assets/asura.png"));
+
+	const contextMenu = Menu.buildFromTemplate([{ label: "Quit", role: "quit" }]);
+
+	tray.setToolTip("This is my application.");
+	tray.setContextMenu(contextMenu);
+
+	tray.on("click", () => {
+		// You can show your main app window here, for example.
+	});
+
 	createMainWindow();
 
 	// Remove mainWindow from memory on close to prevent memory leak
@@ -96,9 +108,9 @@ ipcMain.on("close-window", () => {
 // for applications and their menu bar to stay active until the user quits
 // explicitly with Cmd + Q.
 app.on("window-all-closed", () => {
-	if (!isMac) {
-		app.quit();
-	}
+	// if (!isMac) {
+	// 	app.quit();
+	// }
 });
 
 ipcMain.handle("get-updates", async () => {

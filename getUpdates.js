@@ -11,12 +11,11 @@ const getComicUpdates = async () => {
 	// * Constants
 
 	const URLS = {
-		asura: "https://asuracomics.com/",
+		asura: "https://asuratoon.com/",
 		demon: "https://manga-demon.org/",
 		freak: "https://manhwa-freak.com/",
 		reset: "https://reset-scans.com/",
-		realm: "https://realmscans.to/",
-		flame: "https://flamescans.org/",
+		rizz: "https://rizzcomic.com/",
 	};
 
 	const SELECTORS = {
@@ -28,10 +27,7 @@ const getComicUpdates = async () => {
 			".lastest > div:nth-child(2) > div:nth-child(1) > div:nth-child(2) > div:nth-child(1) > a:nth-child(1)",
 		reset:
 			"div.col-md-6:nth-child(1) > div:nth-child(2) > a:nth-child(1) > h5:nth-child(1)",
-		realm:
-			"#content > div.wrapper > div.postbody > div > div.listupd > div:nth-child(1) > div > div.luf > a > h4",
-		flame:
-			"div.styletere:nth-child(1) > div:nth-child(1) > div:nth-child(2) > div:nth-child(1) > a:nth-child(1) > div:nth-child(1)",
+		rizz: "#content > div.wrapper > div.postbody > div > div.listupd > div:nth-child(1) > div > div.luf > a > h4",
 	};
 	const MIN_WAIT = 10000;
 	const MAX_WAIT = 15000;
