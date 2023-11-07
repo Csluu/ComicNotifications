@@ -1,7 +1,7 @@
 const { app, BrowserWindow, ipcMain, shell, Menu, Tray } = require("electron");
 const Store = require("electron-store");
 const path = require("path");
-const getComicUpdates = require("./getUpdates");
+const getComicUpdates = require("./webscrap");
 
 // * Constants and Variables
 // ! Change this to "production" or "development" when in development in when ready for production
@@ -15,11 +15,11 @@ const isWin = process.platform === "win32";
 const store = new Store();
 
 // Initializing main window so we can remove it from memory later to prevent memory leak
-let mainWindow;
+let mainWindow = [];
 let tray = null;
 
 // * Browser Windows
-const createMainWindow = () => {
+const createMainWindow = (updateData) => {
 	// Gets x,y cords from windowPosition if not get the default position, undefined.
 	let { x, y } = store.get("windowPosition", { x: undefined, y: undefined });
 
@@ -53,8 +53,18 @@ const createMainWindow = () => {
 	// and load the index.html of the app.
 	mainWindow.loadFile(path.join(__dirname, "./Renderer/index.html"));
 
+	// Wait for the window to finish loading
+	mainWindow.webContents.once("did-finish-load", () => {
+		// Send the updateData to the renderer process
+		mainWindow.webContents.send("update-data", updateData);
+	});
+
+	// Store the window in an array
+	mainWindows.push(mainWindow);
+
 	// Save window position when the window is closed.
 	mainWindow.on("close", () => {
+		mainWindows = mainWindows.filter((win) => win !== mainWindow);
 		let { x, y } = mainWindow.getBounds();
 		store.set("windowPosition", { x, y });
 	});
@@ -80,12 +90,19 @@ app.whenReady().then(async () => {
 	// Remove mainWindow from memory on close to prevent memory leak
 	mainWindow.on("closed", () => (mainWindow = null));
 
+	// Listen for updates from the main process
+	ipcMain.on("send-update", (event, updateData) => {
+		mainWindow.webContents.send("update-received", updateData);
+	});
+
 	// TODO Check what this does again
 	app.on("activate", () => {
 		if (BrowserWindow.getAllWindows().length === 0) {
 			createMainWindow();
 		}
 	});
+
+	periodicallyCheckUpdates(); // Call this to start the periodic update check
 });
 
 // * Basic Window Functions
@@ -113,18 +130,32 @@ app.on("window-all-closed", () => {
 	// }
 });
 
-ipcMain.handle("get-updates", async () => {
-	try {
-		const updates = await getComicUpdates();
-		return updates;
-	} catch (error) {
-		console.error("Error fetching comic updates:", error);
-	}
-});
-
 ipcMain.handle("open-link", (_, url) => {
 	shell.openExternal(url);
 	console.log("Launch");
 });
 
 // TODO Close out the popup after few seconds
+
+
+async function periodicallyCheckUpdates() {
+	try {
+		const updates = await getComicUpdates();
+		if (updates && updates.length > 0) {
+			updates.forEach((updateData) => {
+				createMainWindow(updateData); // Create a new window for each update
+			});
+		}
+	} catch (error) {
+		console.error(error + "There was an error fetching the data");
+	}
+	console.log("update complete", updates);
+	setTimeout(periodicallyCheckUpdates, updateDelay());
+}
+
+function updateDelay() {
+	// Random time between 30 mins (1800000) and a little over 30 mins.
+	const waitTime =
+		Math.floor(Math.random() * (2000000 - 1800000 + 1)) + 1800000;
+	return waitTime;
+}

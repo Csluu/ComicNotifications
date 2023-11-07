@@ -3,9 +3,9 @@ const { contextBridge, ipcRenderer } = require("electron");
 
 contextBridge.exposeInMainWorld("electron", {
 	openLink: (url) => ipcRenderer.invoke("open-link", url),
-	requestUpdate: async () => {
-		return await ipcRenderer.invoke("get-updates");
-	},
+	// requestUpdate: async () => {
+	// 	return await ipcRenderer.invoke("get-updates");
+	// },
 	closeWindow: () => ipcRenderer.send("close-window"),
 });
 

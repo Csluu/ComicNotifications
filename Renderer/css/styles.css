@@ -665,8 +665,8 @@ video {
 }
 
 .shadow-border{
-  --tw-shadow: 0 3px 10px 2px rgba(0, 0, 0, 0.5), 0 5px 15px 2px rgba(0, 0, 0, 0.5), inset 0 0 0 1px rgba(87,88,89,1), inset 0 0 4px rgba(87,88,89,1);
-  --tw-shadow-colored: 0 3px 10px 2px var(--tw-shadow-color), 0 5px 15px 2px var(--tw-shadow-color), inset 0 0 0 1px var(--tw-shadow-color), inset 0 0 4px var(--tw-shadow-color);
+  --tw-shadow: 0 3px 10px 2px rgba(0, 0, 0, 0.5), 0 5px 15px 2px rgba(0, 0, 0, 0.5), inset 0 0 0 2px rgba(87,88,89,0.66), inset 0 0 5px rgba(87,88,89,0.66);
+  --tw-shadow-colored: 0 3px 10px 2px var(--tw-shadow-color), 0 5px 15px 2px var(--tw-shadow-color), inset 0 0 0 2px var(--tw-shadow-color), inset 0 0 5px var(--tw-shadow-color);
   box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
 }
 
