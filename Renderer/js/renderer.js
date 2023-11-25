@@ -2,7 +2,7 @@ function createUpdateElement(update) {
 	// Create the main container
 	const linkElement = document.createElement("a");
 	linkElement.className =
-		"update-container flex flex-row gap-5 h-[125px] w-[450px] justify-start px-5 place-items-center border-black shadow-border border-[1px] bg-clear-dark-gray rounded-xl py-3 no-drag select-none absolute";
+		"update-container flex flex-row gap-5 h-[125px] w-[450px] justify-start px-5 place-items-center border-black shadow-border border-[1px] bg-clear-dark-gray rounded-2xl py-3 no-drag select-none absolute";
 	linkElement.onclick = () => window.electron.openLink(update.url);
 
 	// Create the image container

@@ -82,22 +82,40 @@ const createMainWindow = (updateData) => {
 };
 
 // * App Initialization
-// This method will be called when Electron has finished
-// Some APIs can only be used after this event occurs.
-app.whenReady().then(async () => {
-	tray = new Tray(path.join(__dirname, "./Renderer/assets/tray.png"));
+// Request single instance lock
+// Making sure if there is another instance of this application or not.
+const gotTheLock = app.requestSingleInstanceLock();
 
-	const contextMenu = Menu.buildFromTemplate([
-		{ label: "Open Links", click: openAllLinks },
-		{ type: "separator" },
-		{ label: "Quit", role: "quit" },
-	]);
+if (!gotTheLock) {
+	// If we don't get the lock, another instance is running, so quit
+	console.log("Application is already running");
+	app.quit();
+} else {
+	app.on("second-instance", (event, commandLine, workingDirectory) => {
+		// Someone tried to run a second instance, we should focus our window
+		if (mainWindow) {
+			if (mainWindow.isMinimized()) mainWindow.restore();
+			mainWindow.focus();
+		}
+	});
 
-	tray.setToolTip("This is my application.");
-	tray.setContextMenu(contextMenu);
+	// This method will be called when Electron has finished
+	// Some APIs can only be used after this event occurs.
+	app.whenReady().then(async () => {
+		tray = new Tray(path.join(__dirname, "./Renderer/assets/tray.png"));
 
-	periodicallyCheckUpdates(); // Call this to start the periodic update check
-});
+		const contextMenu = Menu.buildFromTemplate([
+			{ label: "Open Links", click: openAllLinks },
+			{ type: "separator" },
+			{ label: "Quit", role: "quit" },
+		]);
+
+		tray.setToolTip("This is my application.");
+		tray.setContextMenu(contextMenu);
+
+		periodicallyCheckUpdates(); // Call this to start the periodic update check
+	});
+}
 
 // * Basic Window Functions
 ipcMain.on("minimize-window", () => {
@@ -154,13 +172,26 @@ function updateDelay() {
 
 // For the tray button
 async function openAllLinks() {
-	const constantsFilePath = path.join(__dirname, "constants.json");
+	const constantsFilePath = getConstantsFilePath();
 	const constants = JSON.parse(fs.readFileSync(constantsFilePath, "utf8"));
 	const URLS = constants.urls;
 
 	Object.values(URLS).forEach((url) => {
 		shell.openExternal(url);
 	});
+}
+
+function getConstantsFilePath() {
+	if (process.env.NODE_ENV === "development") {
+		return path.join(__dirname, "constants.json");
+	} else {
+		// In production, point to the location where constants.json is unpacked
+		return path.join(
+			process.resourcesPath,
+			"app.asar.unpacked",
+			"constants.json"
+		);
+	}
 }
 
 // const fakeData = {

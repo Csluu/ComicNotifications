@@ -5,19 +5,20 @@
 	"main": "main.js",
 	"scripts": {
 		"start": "electron .",
-		"test": "echo \"Error: no test specified\" && exit 1"
+		"test": "echo \"Error: no test specified\" && exit 1",
+		"build:linux": "electron-builder --linux --x64"
 	},
 	"author": "",
 	"license": "ISC",
 	"devDependencies": {
 		"electron": "^26.2.1",
 		"electron-builder": "^24.6.4",
-		"electron-store": "^8.1.0",
 		"prettier": "^3.0.3",
 		"prettier-plugin-tailwindcss": "^0.5.4",
 		"tailwindcss": "^3.3.3"
 	},
 	"dependencies": {
+		"electron-store": "^8.1.0",
 		"puppeteer": "^21.3.1",
 		"puppeteer-extra": "^3.3.6",
 		"puppeteer-extra-plugin-adblocker": "^2.13.6",
@@ -31,7 +32,7 @@
 		},
 		"asarUnpack": [
 			"./Renderer/assets/**",
-			"./constants"
+			"./constants.json"
 		]
 	}
 }

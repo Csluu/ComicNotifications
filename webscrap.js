@@ -34,7 +34,7 @@ const getComicUpdates = async () => {
 	// * Web Scrapping Logic
 	// Configuring Puppeteer
 	const browser = await puppeteer.launch({
-		headless: false,
+		headless: "new",
 	});
 	const page = await browser.newPage();
 
