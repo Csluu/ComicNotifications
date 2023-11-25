@@ -3,46 +3,42 @@ const StealthPlugin = require("puppeteer-extra-plugin-stealth");
 const adblocker = require("puppeteer-extra-plugin-adblocker");
 const Store = require("electron-store");
 const store = new Store();
+const fs = require("fs");
+const path = require("path");
 
 puppeteer.use(StealthPlugin());
 puppeteer.use(adblocker());
 
 const getComicUpdates = async () => {
 	// * Constants
+	// Parsing JSON
+	const constantsFilePath = path.join(__dirname, "constants.json");
+	// fs.readFileSync is used to read JSON absolute
+	// json.parse converts json string to a javascript object
+	const constants = JSON.parse(fs.readFileSync(constantsFilePath, "utf8"));
 
-	const URLS = {
-		asura: "https://asuratoon.com/",
-		demon: "https://manga-demon.org/",
-		freak: "https://manhwa-freak.com/",
-		reset: "https://reset-scans.com/",
-		rizz: "https://rizzcomic.com/",
-	};
+	// Constant variables
+	const URLS = constants.urls;
+	const URLS_NAMES = constants.websiteName;
+	const SELECTORS = constants.selectors;
+	const MIN_WAIT = constants.minWaitTime;
+	const MAX_WAIT = constants.maxWaitTIme;
+	const CURRENTLY_READING = constants.currentlyReading;
 
-	const SELECTORS = {
-		demon:
-			"li.updates-item:nth-child(1) > div:nth-child(1) > div:nth-child(2) > h2:nth-child(1) > a:nth-child(1)",
-		asura:
-			"div.utao:nth-child(1) > div:nth-child(1) > div:nth-child(2) > a:nth-child(1)",
-		freak:
-			".lastest > div:nth-child(2) > div:nth-child(1) > div:nth-child(2) > div:nth-child(1) > a:nth-child(1)",
-		reset:
-			"div.col-md-6:nth-child(1) > div:nth-child(2) > a:nth-child(1) > h5:nth-child(1)",
-		rizz: "#content > div.wrapper > div.postbody > div > div.listupd > div:nth-child(1) > div > div.luf > a > h4",
-	};
-	const MIN_WAIT = 10000;
-	const MAX_WAIT = 15000;
-
+	// Getting the last updated manhwa on the websites
 	const lastUpdate = store.get("lastUpdate", {}); // Get the last updates from Electron Store
+	// store.clear(); // For clearing and testing purposes
 	console.log(lastUpdate);
 	const newUpdate = {}; // Object to hold new updates
 
 	// * Web Scrapping Logic
+	// Configuring Puppeteer
 	const browser = await puppeteer.launch({
 		headless: false,
 	});
-
 	const page = await browser.newPage();
 
+	// Going to each Website and grabbing the latest update
 	for (const site in URLS) {
 		try {
 			await page.goto(URLS[site]);
@@ -63,9 +59,19 @@ const getComicUpdates = async () => {
 		console.log(currentUpdate, "current update");
 		console.log(lastUpdate[site], "last update");
 
+		// Checks to see if the new update is the same as the old update
+		// if its different check to see if the updated manhwa is what we are currently reading
+		// if it is then update to the newUpdate variable so that we can send it to main
 		if (lastUpdate[site] !== currentUpdate) {
-			newUpdate[site] = currentUpdate; // Add to new updates if different
-
+			// Check if the current update is in the list of custrrently reading manhwas
+			if (CURRENTLY_READING[site].includes(currentUpdate)) {
+				newUpdate[site] = {
+					title: currentUpdate, // The title or update information
+					url: URLS[site], // The URL of the site where the update was found
+					name: URLS_NAMES[site], // Website name
+					image: site,
+				};
+			}
 			// Update Electron Store with the new value
 			store.set(`lastUpdate.${site}`, currentUpdate);
 		}
@@ -80,15 +86,16 @@ const getComicUpdates = async () => {
 	return newUpdate; // Return the updates
 };
 
+// * Supporting Functions
 function waitTime(MAX_WAIT, MIN_WAIT) {
 	return Math.floor(Math.random() * (MAX_WAIT - MIN_WAIT + 1)) + MIN_WAIT;
 }
 
 // Evaluate the page for the contents
-async function evaluatePage(page, path) {
-	return await page.$eval(path, (element) => {
-		return element.textContent;
+async function evaluatePage(page, selector) {
+	return await page.$eval(selector, (element) => {
+		// Replace tabs and newlines with an empty string and trim leading/trailing spaces
+		return element.textContent.replace(/[\t\n]/g, "").trim();
 	});
 }
-
 module.exports = getComicUpdates;

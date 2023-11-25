@@ -1,0 +1,110 @@
+{
+	"urls": {
+		"asura": "https://asuratoon.com/",
+		"demon": "https://manga-demon.org/",
+		"freak": "https://manhwa-freak.com/",
+		"reset": "https://reset-scans.com/",
+		"rizz": "https://rizzcomic.com/",
+		"flame": "https://flamecomics.com/",
+		"night": "https://nightscans.net/",
+		"reader": "https://readers-point.space/"
+	},
+	"websiteName": {
+		"asura": "Asuratoon",
+		"demon": "Manga Demon",
+		"freak": "Manhwa Freak",
+		"reset": "Reset Scans",
+		"rizz": "Rizz Comics",
+		"flame": "Flame Comics",
+		"night": "Night Scans",
+		"reader": "Quantum Scans"
+	},
+	"selectors": {
+		"demon": "li.updates-item:nth-child(1) > div:nth-child(1) > div:nth-child(2) > h2:nth-child(1) > a:nth-child(1)",
+		"asura": "div.utao:nth-child(1) > div:nth-child(1) > div:nth-child(2) > a:nth-child(1)",
+		"freak": ".lastest > div:nth-child(2) > div:nth-child(1) > div:nth-child(2) > div:nth-child(1) > a:nth-child(1)",
+		"reset": "div.col-md-6:nth-child(1) > div:nth-child(2) > a:nth-child(1) > h5:nth-child(1)",
+		"rizz": "#content > div.wrapper > div.postbody > div > div.listupd > div:nth-child(1) > div > div.luf > a > h4",
+		"flame": "div.styletere:nth-child(1) > div:nth-child(1) > div:nth-child(2) > div:nth-child(1) > a:nth-child(1) > div:nth-child(1)",
+		"night": "div.styletere:nth-child(1) > div:nth-child(1) > div:nth-child(2) > div:nth-child(1) > a:nth-child(1)",
+		"reader": "div.utao:nth-child(1) > div:nth-child(1) > div:nth-child(2) > a:nth-child(1) > h4:nth-child(1)"
+	},
+	"currentlyReading": {
+		"asura": [
+			"The Dark Mage’s Return to Enlistment",
+			"F-Class Destiny Hunter",
+			"Insanely-Talented Player",
+			"Revenge of the Iron-Blooded Sword Hound",
+			"The Knight King Who Returned with a God",
+			"Murim Login",
+			"Absolute Sword Sense",
+			"Academy’s Genius Swordmaster",
+			"The Player Hides His Past",
+			"Wandering Warrior of Wudang",
+			"The Priest of Corruption",
+			"Regressing with the King’s Power",
+			"Surviving The Game as a Barbarian",
+			"I’ll Be Taking A Break For Personal Reasons",
+			"Logging 10,000 Years into the Future",
+			"I Killed an Academy Player",
+			"Demonic Evolution",
+			"Weapon Maker",
+			"Reaper of the Drifting Moon",
+			"Gods’ Gambit",
+			"Damn Reincarnation",
+			"Pick Me Up, Infinite Gacha",
+			"The S-Classes That I Raised",
+			"Return of the Mount Hua Sect",
+			"Chronicles Of The Martial God’s Return",
+			"Star-Embracing Swordmaster",
+			"The Max-Level Player’s 100th Regression",
+			"Infinite Mage",
+			"Reincarnation of the Suicidal Battle God",
+			"Chronicles of the Demon Faction",
+			"The Tutorial is Too Hard",
+			"Necromancer’s Evolutionary Traits",
+			"Helmut: The Forsaken Child",
+			"Steel-Eating Player",
+			"Otherworldly Skeleton Evolution",
+			"Hoarding in Hell",
+			"World’s Strongest Troll"
+		],
+		"demon": [
+			"World's Strongest Troll",
+			"Path of the Shaman",
+			"Lightning Degree",
+			"The Archmage's Restaurant"
+		],
+		"freak": [
+			"Masters of Lightning K...",
+			"Manager Seo Indus...",
+			"Demon in Mount Hua",
+			"Wail Of Weakness"
+		],
+		"reset": [
+			"Dungeon Reset",
+			"Underworld Restaurant",
+			"The Wizard's Restaurant"
+		],
+		"rizz": [
+			"The Invincible Of The East",
+			"Top Tier Providence",
+			"I Became A Terminally-Ill Knight",
+			"Infinite Level up in Murim",
+			"Solo Farming In The Tower",
+			"Holy Emperor’s Grandson is a Necromancer",
+			"Chronicles Of The Martial God’s Return",
+			"Warrior Grandpa And Supreme Granddaughter",
+			"The Little Brother Is The Academy's Hotshot",
+			"The Count's Youngest Son is A Player"
+		],
+		"flame": [
+			"Is This Hero for Real?",
+			"I’ll be Taking a Break for Personal Reasons"
+		],
+		"night": ["The Regressor’s Retirement Life", "The Roaring Dragon’s Emblem"],
+		"reader": ["The Archmage’s Restaurant"]
+	},
+	"minWaitTime": 10000,
+	"maxWaitTime": 15000
+}

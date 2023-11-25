@@ -28,6 +28,10 @@
 		"linux": {
 			"target": "AppImage",
 			"icon": "./build/icon.png"
-		}
+		},
+		"asarUnpack": [
+			"./Renderer/assets/**",
+			"./constants"
+		]
 	}
 }

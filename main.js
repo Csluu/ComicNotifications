@@ -2,6 +2,7 @@ const { app, BrowserWindow, ipcMain, shell, Menu, Tray } = require("electron");
 const Store = require("electron-store");
 const path = require("path");
 const getComicUpdates = require("./webscrap");
+const fs = require("fs");
 
 // * Constants and Variables
 // ! Change this to "production" or "development" when in development in when ready for production
@@ -15,7 +16,7 @@ const isWin = process.platform === "win32";
 const store = new Store();
 
 // Initializing main window so we can remove it from memory later to prevent memory leak
-let mainWindow = [];
+let mainWindow;
 let tray = null;
 
 // * Browser Windows
@@ -27,11 +28,12 @@ const createMainWindow = (updateData) => {
 	mainWindow = new BrowserWindow({
 		x: 1080,
 		y: 20,
-		width: isDev ? 1500 : 475,
-		height: isDev ? 500 : 150,
+		width: isDev ? 1500 : 500,
+		height: isDev ? 500 : 175,
 		transparent: isDev ? false : true,
 		resizable: isDev ? true : false,
 		frame: isDev ? true : false,
+		icon: path.join(__dirname, "./build/logo.png"),
 		webPreferences: {
 			// allows dev tools to be opened
 			devTools: isDev ? true : false,
@@ -57,16 +59,25 @@ const createMainWindow = (updateData) => {
 	mainWindow.webContents.once("did-finish-load", () => {
 		// Send the updateData to the renderer process
 		mainWindow.webContents.send("update-data", updateData);
-	});
 
-	// Store the window in an array
-	mainWindows.push(mainWindow);
+		// Set a timeout to close the window after 10 seconds (10000 milliseconds)
+		setTimeout(() => {
+			// Checking to see if we have manually closed the window or not
+			if (mainWindow) {
+				mainWindow.close();
+			}
+		}, 30000);
+	});
 
 	// Save window position when the window is closed.
 	mainWindow.on("close", () => {
-		mainWindows = mainWindows.filter((win) => win !== mainWindow);
-		let { x, y } = mainWindow.getBounds();
-		store.set("windowPosition", { x, y });
+		if (mainWindow) {
+			let { x, y } = mainWindow.getBounds();
+			store.set("windowPosition", { x, y });
+		}
+
+		// When the window is closed, set mainWindow to null to help with the automatic timeout
+		mainWindow = null;
 	});
 };
 
@@ -74,33 +85,16 @@ const createMainWindow = (updateData) => {
 // This method will be called when Electron has finished
 // Some APIs can only be used after this event occurs.
 app.whenReady().then(async () => {
-	tray = new Tray(path.join(__dirname, "./Renderer/assets/asura.png"));
+	tray = new Tray(path.join(__dirname, "./Renderer/assets/tray.png"));
 
-	const contextMenu = Menu.buildFromTemplate([{ label: "Quit", role: "quit" }]);
+	const contextMenu = Menu.buildFromTemplate([
+		{ label: "Open Links", click: openAllLinks },
+		{ type: "separator" },
+		{ label: "Quit", role: "quit" },
+	]);
 
 	tray.setToolTip("This is my application.");
 	tray.setContextMenu(contextMenu);
-
-	tray.on("click", () => {
-		// You can show your main app window here, for example.
-	});
-
-	createMainWindow();
-
-	// Remove mainWindow from memory on close to prevent memory leak
-	mainWindow.on("closed", () => (mainWindow = null));
-
-	// Listen for updates from the main process
-	ipcMain.on("send-update", (event, updateData) => {
-		mainWindow.webContents.send("update-received", updateData);
-	});
-
-	// TODO Check what this does again
-	app.on("activate", () => {
-		if (BrowserWindow.getAllWindows().length === 0) {
-			createMainWindow();
-		}
-	});
 
 	periodicallyCheckUpdates(); // Call this to start the periodic update check
 });
@@ -135,21 +129,19 @@ ipcMain.handle("open-link", (_, url) => {
 	console.log("Launch");
 });
 
-// TODO Close out the popup after few seconds
-
-
+// * Supporting Functions
 async function periodicallyCheckUpdates() {
+	let updates;
 	try {
-		const updates = await getComicUpdates();
-		if (updates && updates.length > 0) {
-			updates.forEach((updateData) => {
-				createMainWindow(updateData); // Create a new window for each update
-			});
+		updates = await getComicUpdates();
+		if (updates && Object.keys(updates).length > 0) {
+			const updatesArray = Object.values(updates);
+			createMainWindow(updatesArray);
 		}
+		console.log("update complete", updates); // Log statement moved here
 	} catch (error) {
-		console.error(error + "There was an error fetching the data");
+		console.error("There was an error fetching the data:", error);
 	}
-	console.log("update complete", updates);
 	setTimeout(periodicallyCheckUpdates, updateDelay());
 }
 
@@ -159,3 +151,37 @@ function updateDelay() {
 		Math.floor(Math.random() * (2000000 - 1800000 + 1)) + 1800000;
 	return waitTime;
 }
+
+// For the tray button
+async function openAllLinks() {
+	const constantsFilePath = path.join(__dirname, "constants.json");
+	const constants = JSON.parse(fs.readFileSync(constantsFilePath, "utf8"));
+	const URLS = constants.urls;
+
+	Object.values(URLS).forEach((url) => {
+		shell.openExternal(url);
+	});
+}
+
+// const fakeData = {
+// 	asura: {
+// 		title: "Terminally-Ill Genius Dark Knight",
+// 		url: "https://asuratoon.com/",
+// 		name: "Asuratoon",
+// 		image: "asura",
+// 	},
+// 	demon: {
+// 		title: "Becoming A Sword Deity By Expanding My Sword Domain",
+// 		url: "https://asuratoon.com/",
+// 		name: "Manga Demon",
+// 		image: "demon",
+// 	},
+// 	freak: {
+// 		title: "1 Million Times A...",
+// 		url: "https://asuratoon.com/",
+// 		name: "Manga freak",
+// 		image: "manhwa",
+// 	},
+// };
+
+// const updatesArray = Object.values(fakeData);
