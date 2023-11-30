@@ -26,8 +26,8 @@ const createMainWindow = (updateData) => {
 
 	// Create the browser window.
 	mainWindow = new BrowserWindow({
-		x: 1080,
-		y: 20,
+		x,
+		y,
 		width: isDev ? 1500 : 500,
 		height: isDev ? 500 : 175,
 		transparent: isDev ? false : true,
@@ -81,7 +81,7 @@ const createMainWindow = (updateData) => {
 	});
 };
 
-// * App Initialization
+//  App Initialization
 // Request single instance lock
 // Making sure if there is another instance of this application or not.
 const gotTheLock = app.requestSingleInstanceLock();
