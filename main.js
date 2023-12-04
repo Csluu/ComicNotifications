@@ -105,6 +105,7 @@ if (!gotTheLock) {
 		tray = new Tray(path.join(__dirname, "./Renderer/assets/tray.png"));
 
 		const contextMenu = Menu.buildFromTemplate([
+			{ label: "Stocks", click: finviz },
 			{ label: "Open Links", click: openAllLinks },
 			{ type: "separator" },
 			{ label: "Quit", role: "quit" },
@@ -179,6 +180,10 @@ async function openAllLinks() {
 	Object.values(URLS).forEach((url) => {
 		shell.openExternal(url);
 	});
+}
+
+async function finviz() {
+	shell.openExternal("https://finviz.com/");
 }
 
 function getConstantsFilePath() {
