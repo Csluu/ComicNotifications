@@ -8,14 +8,16 @@ const path = require("path");
 
 puppeteer.use(StealthPlugin());
 puppeteer.use(adblocker());
+process.env.NODE_ENV = "production";
 
-const getComicUpdates = async () => {
+const getComicUpdates = async (constantsFilePath) => {
 	// * Constants
 	// Parsing JSON
-	const constantsFilePath = path.join(__dirname, "constants.json");
 	// fs.readFileSync is used to read JSON absolute
 	// json.parse converts json string to a javascript object
 	const constants = JSON.parse(fs.readFileSync(constantsFilePath, "utf8"));
+	console.log(constantsFilePath);
+	console.log(constants);
 
 	// Constant variables
 	const URLS = constants.urls;
@@ -24,6 +26,8 @@ const getComicUpdates = async () => {
 	const MIN_WAIT = constants.minWaitTime;
 	const MAX_WAIT = constants.maxWaitTIme;
 	const CURRENTLY_READING = constants.currentlyReading;
+
+	console.log(URLS);
 
 	// Getting the last updated manhwa on the websites
 	const lastUpdate = store.get("lastUpdate", {}); // Get the last updates from Electron Store
@@ -98,4 +102,5 @@ async function evaluatePage(page, selector) {
 		return element.textContent.replace(/[\t\n]/g, "").trim();
 	});
 }
+
 module.exports = getComicUpdates;

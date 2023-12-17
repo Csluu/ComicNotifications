@@ -114,7 +114,18 @@ if (!gotTheLock) {
 		tray.setToolTip("This is my application.");
 		tray.setContextMenu(contextMenu);
 
-		periodicallyCheckUpdates(); // Call this to start the periodic update check
+		const userDataPath = app.getPath("userData");
+		const constantsFilePath = path.join(userDataPath, "constants.json");
+
+		// If constant file does not exist in users app data then copy it the one from development
+		if (!fs.existsSync(constantsFilePath)) {
+			const devConstantsPath = path.join(__dirname, "constants.json");
+			if (fs.existsSync(devConstantsPath)) {
+				fs.copyFileSync(devConstantsPath, constantsFilePath);
+			}
+		}
+
+		periodicallyCheckUpdates(constantsFilePath); // Call this to start the periodic update check
 	});
 }
 
@@ -149,10 +160,10 @@ ipcMain.handle("open-link", (_, url) => {
 });
 
 // * Supporting Functions
-async function periodicallyCheckUpdates() {
+async function periodicallyCheckUpdates(constantsFilePath) {
 	let updates;
 	try {
-		updates = await getComicUpdates();
+		const updates = await getComicUpdates(constantsFilePath);
 		if (updates && Object.keys(updates).length > 0) {
 			const updatesArray = Object.values(updates);
 			createMainWindow(updatesArray);
@@ -187,16 +198,7 @@ async function finviz() {
 }
 
 function getConstantsFilePath() {
-	if (process.env.NODE_ENV === "development") {
-		return path.join(__dirname, "constants.json");
-	} else {
-		// In production, point to the location where constants.json is unpacked
-		return path.join(
-			process.resourcesPath,
-			"app.asar.unpacked",
-			"constants.json"
-		);
-	}
+	return path.join(app.getPath("userData"), "constants.json");
 }
 
 // const fakeData = {
