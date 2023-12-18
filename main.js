@@ -172,7 +172,7 @@ async function periodicallyCheckUpdates(constantsFilePath) {
 	} catch (error) {
 		console.error("There was an error fetching the data:", error);
 	}
-	setTimeout(periodicallyCheckUpdates, updateDelay());
+	setTimeout(() => periodicallyCheckUpdates(constantsFilePath), updateDelay());
 }
 
 function updateDelay() {
